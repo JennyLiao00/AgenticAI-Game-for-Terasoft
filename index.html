@@ -688,7 +688,7 @@
         <a href="${REGISTER_URL}" target="_blank" rel="noopener" style="text-decoration:none;">
           <button class="primary-btn">前往報名</button>
         </a>
-        <button class="secondary-btn" id="storyBtn">下載限動圖片(9:16)</button>
+        <button class="secondary-btn" id="storyBtn">產生限動圖片</button>
         <button class="secondary-btn" id="retakeBtn">再測一次</button>
         <div class="footer-note" id="shareNote"></div>
       </div>
@@ -709,35 +709,25 @@
       try {
         const levelIndex = PERSONAS.indexOf(persona);
         const canvas = await buildStoryCanvas(persona, pct, levelIndex);
-        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-        if (!blob) throw new Error('canvas_empty');
+        const dataUrl = canvas.toDataURL('image/png');
 
-        const filename = `matlab-ai-quiz-lv${levelIndex + 1}.png`;
-        let downloadsCap = null;
-        if (window.claude && window.claude.use) {
-          try { downloadsCap = await window.claude.use('downloads'); } catch (e) { downloadsCap = null; }
+        // Show the image inline so it works in IG/LINE/FB in-app browsers
+        let imgWrap = document.getElementById('storyImgWrap');
+        if (!imgWrap) {
+          imgWrap = document.createElement('div');
+          imgWrap.id = 'storyImgWrap';
+          imgWrap.style.cssText = 'margin-top:16px;text-align:center;';
+          btn.parentNode.insertBefore(imgWrap, btn.nextSibling);
         }
-
-        if (downloadsCap) {
-          const result = await downloadsCap.save({ filename, data: blob });
-          note.textContent = result.status === 'saved'
-            ? '圖片已存到裝置,打開社群 App 選「限時動態」上傳就能分享'
-            : '圖片已送出';
-        } else {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          setTimeout(() => URL.revokeObjectURL(url), 4000);
-          note.textContent = '已嘗試下載;若沒有反應,直接截圖這張結果卡也可以分享';
-        }
+        imgWrap.innerHTML = `
+          <img src="${dataUrl}" alt="限動圖片" style="width:100%;max-width:320px;border-radius:12px;border:1.5px solid var(--border);" />
+          <div style="color:var(--ink-muted);font-size:0.85rem;margin-top:10px;line-height:1.6;">
+            📱 長按圖片 → 儲存到手機 → 上傳限動
+          </div>
+        `;
+        note.textContent = '';
       } catch (err) {
-        note.textContent = (err && err.code === 'declined')
-          ? '已取消下載'
-          : '下載沒有成功,可以改用截圖分享這張結果卡';
+        note.textContent = '圖片產生失敗,可以直接截圖這張結果卡分享';
       } finally {
         btn.disabled = false;
         btn.textContent = originalText;
