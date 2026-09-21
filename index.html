@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>你是 Copilot 型,還是 Agent 型工程師?</title>
+<title>你的 AI 協作風格是哪一派？</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -228,19 +228,29 @@
     margin-top: 6px;
   }
 
-  .gauge-wrap {
+  .type-badges {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    margin: 18px 0 6px;
+    gap: 8px;
+    margin: 20px 0 6px;
   }
-
-  .gauge-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.72rem;
+  .type-badge {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
     color: var(--ink-muted);
-    padding: 0 4px;
-    margin-top: -6px;
+    opacity: 0.6;
+  }
+  .type-badge.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+    opacity: 1;
+    font-weight: 600;
   }
 
   .result-desc {
@@ -297,14 +307,14 @@
     {
       q: "你手上有一段重複性很高的工作（例如批次改設定、跑一系列測試），你會怎麼處理？",
       options: [
-        { t: "一個一個手動處理,最踏實", v: 0 },
+        { t: "一個一個手動處理，最踏實", v: 0 },
         { t: "自己寫段 script 跑一次", v: 1 },
-        { t: "請 AI 幫我寫 script,我確認後執行", v: 2 },
+        { t: "請 AI 幫我寫 script，我確認後執行", v: 2 },
         { t: "直接跟 AI 說「幫我全部處理好」", v: 3 }
       ]
     },
     {
-      q: "程式跑出一段看不懂的錯誤訊息,你的直覺反應是？",
+      q: "程式跑出一段看不懂的錯誤訊息，你第一個反應是？",
       options: [
         { t: "自己慢慢除錯", v: 0 },
         { t: "查文件或搜尋引擎", v: 1 },
@@ -313,7 +323,7 @@
       ]
     },
     {
-      q: "對你來說,「工具」比較像什麼?",
+      q: "你覺得理想的「工作工具」應該比較像什麼？",
       options: [
         { t: "我打字下指令的地方", v: 0 },
         { t: "會給我建議的助手", v: 1 },
@@ -322,28 +332,28 @@
       ]
     },
     {
-      q: "如果 AI 能自己連上你的工作環境,幫你跑分析並回報結果,你會？",
+      q: "如果 AI 能自己連上你的工作環境，幫你跑分析並回報結果，你會？",
       options: [
-        { t: "有點不放心,想自己確認每一步", v: 0 },
-        { t: "讓它跑,但我會全程盯著", v: 1 },
-        { t: "讓它跑,結束後看結果就好", v: 2 },
-        { t: "直接交給它,順便再丟下一個任務", v: 3 }
+        { t: "有點不放心，想自己確認每一步", v: 0 },
+        { t: "讓它跑，但我會全程盯著", v: 1 },
+        { t: "讓它跑，結束後看結果就好", v: 2 },
+        { t: "直接交給它，順便再丟下一個任務", v: 3 }
       ]
     },
     {
-      q: "你平常怎麼看「自己動手開發生成式 AI 應用」這件事?",
+      q: "對於「自己動手做一個 AI 驅動的應用或工具」，你的想法是？",
       options: [
-        { t: "感覺離我很遠,那是 AI 工程師的事", v: 0 },
-        { t: "有點好奇,但還沒動手", v: 1 },
-        { t: "已經在用一些現成 AI 工具輔助工作", v: 2 },
-        { t: "很想知道怎麼自己動手做一個", v: 3 }
+        { t: "離我太遠，那是 AI 工程師的事", v: 0 },
+        { t: "有點好奇，但不知道從哪開始", v: 1 },
+        { t: "有在摸索，試過用一些平台或框架", v: 2 },
+        { t: "已經在想具體要做什麼了", v: 3 }
       ]
     },
     {
-      q: "用一句話形容你現在的工作狀態?",
+      q: "用一句話形容你現在的工作狀態？",
       options: [
-        { t: "什麼都自己來,穩就好", v: 0 },
-        { t: "AI 幫我寫一點,效率有提升", v: 1 },
+        { t: "什麼都自己來，穩就好", v: 0 },
+        { t: "AI 幫我寫一點，效率有提升", v: 1 },
         { t: "開始讓 AI 幫我做完整段任務", v: 2 },
         { t: "已經在想怎麼讓 AI 管理整個工作流程", v: 3 }
       ]
@@ -353,27 +363,31 @@
   const PERSONAS = [
     {
       max: 4,
-      title: "Lv.1　新手村工程師",
-      tagline: "還沒解鎖「AI 幫忙寫」這個技能",
-      desc: "你習慣什麼都自己來,穩紮穩打,這是每個工程師的基本功。不過你大概還沒解鎖「AI 幫忙寫」這個技能——研討會第一段「Copilot 如何協助日常開發」,適合當你的新手教學。"
+      title: "掌控派",
+      icon: "🔧",
+      tagline: "凡事親力親為，細節都在掌握中",
+      desc: "你重視掌握每個環節，親手確認才放心——這種嚴謹正是好工程的基石。研討會的 Copilot 段會讓你看到，AI 可以在不搶走控制權的前提下幫你加速。"
     },
     {
       max: 9,
-      title: "Lv.2　Copilot 練功中",
-      tagline: "已經讓 AI 幫忙寫程式、抓錯",
-      desc: "你已經習慣讓 AI 在旁邊幫你寫程式、抓錯、給建議,效率明顯升級。下一關要解鎖的是:當 AI 不只是給建議,而是能連上 MATLAB 幫你動手執行,工作會長什麼樣子。"
+      title: "協作派",
+      icon: "🤝",
+      tagline: "AI 是你的最佳搭檔，各司其職",
+      desc: "你已經習慣讓 AI 當副手，一起寫程式、抓錯、找方向，而且很清楚什麼時候該自己來、什麼時候交給 AI。研討會會讓你看到，這個搭檔關係還能再往前走一步。"
     },
     {
       max: 13,
-      title: "Lv.3　Agent 馴獸師",
-      tagline: "開始指揮 AI Agent 動手做任務",
-      desc: "你已經開始想指揮 AI 直接動手做,而不只是給建議。這正是 MCP Server 和 Agentic Toolkit 要教的技能樹——讓 AI Agent 真的能操作 MATLAB、串起完整工作流程。"
+      title: "指揮派",
+      icon: "🎯",
+      tagline: "你負責決策，AI 負責執行",
+      desc: "你不只是讓 AI 給建議，而是開始把整段任務交出去。你的思維已經從「怎麼做」轉向「讓誰做」——MCP Server 和 Agentic Toolkit 正是為這種工作方式設計的。"
     },
     {
       max: 18,
-      title: "Lv.4　Agentic 破關玩家",
-      tagline: "已經在想怎麼讓 AI 管理整個工作流程",
-      desc: "你已經在用 Agent 的方式思考工作,甚至想自己動手開發 AI 應用。研討會最後一關「Develop GenAI-powered Applications」,就是為你這種等級準備的隱藏關卡。"
+      title: "架構派",
+      icon: "🚀",
+      tagline: "設計流程，讓 AI 自己運轉",
+      desc: "你已經在想怎麼讓 AI 管理整個工作流程，甚至自己動手打造 AI 應用。研討會最後一段「Develop GenAI-powered Applications」就是為你準備的。"
     }
   ];
 
@@ -384,9 +398,9 @@
   function renderIntro() {
     app.innerHTML = `
       <div class="card intro">
-        <span class="tag">從 Copilot 到 AI Agent — 通關測驗</span>
-        <h1>你是 Copilot 型,還是 Agent 型工程師?</h1>
-        <p>6 個情境題,測出你在 AI 工程開發世代的等級。</p>
+        <span class="tag">從 Copilot 到 AI Agent — 風格測驗</span>
+        <h1>你的 AI 協作風格是哪一派？</h1>
+        <p>6 個情境題，測出你和 AI 的協作風格。</p>
         <button class="primary-btn" id="startBtn">開始測驗</button>
       </div>
     `;
@@ -617,7 +631,6 @@
     let logoImg = null;
     try { logoImg = await loadImage(LOGO_DATA_URI); } catch (e) { logoImg = null; }
 
-    const [levelLabel, nameLabel] = persona.title.split('\u3000');
     const canvas = document.createElement('canvas');
     canvas.width = 1080;
     canvas.height = 1920;
@@ -628,7 +641,7 @@
 
     const infoCardInner = [
       { type: 'single', text: '網路研討會', font: "600 26px 'Space Grotesk'", color: '#2DD4BF', gapAfter: 72 },
-      { type: 'fixed2', line1: '從 Copilot 到 AI Agent:', line2: 'MATLAB 工程開發的 AI 新進化', font: "700 44px 'Space Grotesk'", color: '#EAF5EE', lineHeight: 62, gapAfter: 68 },
+      { type: 'fixed2', line1: '從 Copilot 到 AI Agent：', line2: 'MATLAB 工程開發的 AI 新進化', font: "700 44px 'Space Grotesk'", color: '#EAF5EE', lineHeight: 62, gapAfter: 68 },
       {
         type: 'badgerow', gap: 16, gapAfter: 60,
         badges: [
@@ -636,15 +649,26 @@
           { text: 'Teams 線上會議', font: "600 28px 'Space Grotesk'", fontSize: 28, textColor: '#4ADE80', bgColor: 'rgba(74,222,128,0.14)', paddingX: 22, paddingY: 12 }
         ]
       },
-      { type: 'fixed2', line1: 'AI 正從提供建議的 Copilot,走向能執行任務的 AI Agent,', line2: '帶你看懂 Copilot、MCP Server 到 Agentic Toolkit 三層新進化。', font: "400 27px 'Inter'", color: '#93AC9C', lineHeight: 40, gapAfter: 0 }
+      { type: 'fixed2', line1: 'AI 正從提供建議的 Copilot，走向能執行任務的 AI Agent，', line2: '帶你看懂 Copilot、MCP Server 到 Agentic Toolkit 三層新進化。', font: "400 27px 'Inter'", color: '#93AC9C', lineHeight: 40, gapAfter: 0 }
     ];
 
+    // Build the 4-type badge row for the image
+    const allTypes = PERSONAS.map((p, i) => ({
+      text: p.icon + ' ' + p.title,
+      font: "600 30px 'Space Grotesk'",
+      fontSize: 30,
+      textColor: i === levelIndex ? '#4ADE80' : '#93AC9C',
+      bgColor: i === levelIndex ? 'rgba(74,222,128,0.22)' : 'rgba(255,255,255,0.06)',
+      paddingX: 24,
+      paddingY: 14
+    }));
+
     const steps = [
-      { type: 'wrap', text: '《從 Copilot 到 AI Agent》通關測驗', font: "600 46px 'Space Grotesk'", color: '#2DD4BF', maxWidth: 900, lineHeight: 58, gapAfter: 240 },
-      { type: 'single', text: levelLabel, font: "700 165px 'Space Grotesk'", color: '#4ADE80', gapAfter: 170 },
-      { type: 'wrap', text: nameLabel, font: "700 78px 'Space Grotesk'", color: '#EAF5EE', maxWidth: 920, lineHeight: 88, gapAfter: 90 },
-      { type: 'gauge', r: 260, pct, levelIndex, gapAfter: 150 },
-      { type: 'wrap', text: persona.tagline, font: "400 38px 'Inter'", color: '#C9DBCF', maxWidth: 860, lineHeight: 50, gapAfter: 90 },
+      { type: 'wrap', text: '《從 Copilot 到 AI Agent》風格測驗', font: "600 46px 'Space Grotesk'", color: '#2DD4BF', maxWidth: 900, lineHeight: 58, gapAfter: 160 },
+      { type: 'single', text: persona.icon, font: "120px serif", color: '#EAF5EE', gapAfter: 180 },
+      { type: 'wrap', text: persona.title, font: "700 120px 'Space Grotesk'", color: '#4ADE80', maxWidth: 920, lineHeight: 130, gapAfter: 100 },
+      { type: 'wrap', text: persona.tagline, font: "400 42px 'Inter'", color: '#C9DBCF', maxWidth: 860, lineHeight: 54, gapAfter: 100 },
+      { type: 'badgerow', gap: 14, gapAfter: 100, badges: allTypes },
       { type: 'card', innerSteps: infoCardInner, width: 920, paddingTop: 70, paddingBottom: 62, radius: 30, bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.16)', gapAfter: 60 },
       { type: 'logo', width: 210, gapAfter: 0 }
     ];
@@ -671,11 +695,10 @@
 
     app.innerHTML = `
       <div class="card">
-        <div class="result-eyebrow">你的等級是</div>
-        <div class="result-title">${persona.title}</div>
-        <div class="gauge-wrap">${gaugeSVG(pct)}</div>
-        <div class="gauge-labels">
-          <span>Lv.1</span><span>Lv.2</span><span>Lv.3</span><span>Lv.4</span>
+        <div class="result-eyebrow">你的 AI 協作風格是</div>
+        <div class="result-title">${persona.icon} ${persona.title}</div>
+        <div class="type-badges">
+          ${PERSONAS.map(p => `<span class="type-badge ${p === persona ? 'active' : ''}">${p.icon} ${p.title}</span>`).join('')}
         </div>
         <p class="result-desc">${persona.desc}</p>
 
@@ -683,12 +706,13 @@
 
         <div class="webinar-info">
           <div class="webinar-time">9/30(三)14:00–15:00｜Teams 線上會議</div>
-          <div class="webinar-title">從 Copilot 到 AI Agent:MATLAB 工程開發的 AI 新進化</div>
+          <div class="webinar-title">從 Copilot 到 AI Agent：MATLAB 工程開發的 AI 新進化</div>
         </div>
+        <button class="secondary-btn" id="storyBtn">產生限動圖片</button>
+        <div id="storyImgWrap"></div>
         <a href="${REGISTER_URL}" target="_blank" rel="noopener" style="text-decoration:none;">
           <button class="primary-btn">前往報名</button>
         </a>
-        <button class="secondary-btn" id="storyBtn">產生限動圖片</button>
         <button class="secondary-btn" id="retakeBtn">再測一次</button>
         <div class="footer-note" id="shareNote"></div>
       </div>
@@ -727,7 +751,7 @@
         `;
         note.textContent = '';
       } catch (err) {
-        note.textContent = '圖片產生失敗,可以直接截圖這張結果卡分享';
+        note.textContent = '圖片產生失敗，可以直接截圖這張結果卡分享';
       } finally {
         btn.disabled = false;
         btn.textContent = originalText;
